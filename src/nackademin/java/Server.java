@@ -58,15 +58,15 @@ public class Server {
     }
 
     public String messageFromClient(){
-        String message = null;
+        String message = null;              //<--- String must be initialized
         try {
             while ((message = reader.readLine()) != null){
-                return message;
+                return message;                                 //<--- just nu bara crap, Se klassen HandleRequest, Validate metoden.
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return message;
+        return message;             //<--- Eftersom den inte är inne i samma brackets tar den värdet från början...
     }
 
 }
