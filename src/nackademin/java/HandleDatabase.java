@@ -4,7 +4,7 @@ import java.io.*;
 
 public class HandleDatabase {
     private File dbContacts;
-    private String line;
+    private String line = "";
     private String modified;
     private String str;
 

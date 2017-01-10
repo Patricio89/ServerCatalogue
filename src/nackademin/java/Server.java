@@ -12,7 +12,7 @@ public class Server {
     private HandleDatabase handleDatabase = new HandleDatabase();
     public void online(){
         try {
-
+            
             ServerSocket serverSocket = new ServerSocket(defaultPort);
 
             while(true) {
