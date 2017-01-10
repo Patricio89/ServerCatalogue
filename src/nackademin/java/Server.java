@@ -1,72 +1,63 @@
 package nackademin.java;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server {
-    private final int defaultTCP = 61616;
     private ServerSocket server;
     private Socket clientConnection;
-    private PrintWriter writer;
-    private BufferedReader reader;
-    HandleRequest handler = new HandleRequest();
-
-    public void online() {
-        setUpServer();
-        while (true){
-            waitForClient();
-            setupCommunication();
-            messageFromClient();
-            handler.validateRequest();
-        }
-    }
-
-    private void setUpServer(){
+    private final int defaultPort = 61616;
+    private HandleDatabase handleDatabase = new HandleDatabase();
+    public void online(){
         try {
-            server = new ServerSocket(defaultTCP);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
-    private void waitForClient(){
-        try {
-            clientConnection = server.accept();
+            ServerSocket serverSocket = new ServerSocket(defaultPort);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+            while(true) {
 
-    private void setupCommunication() {
-        try {
-            writer = new PrintWriter(clientConnection.getOutputStream());
-            reader = new BufferedReader(new InputStreamReader(clientConnection.getInputStream()));
-            messageToClient("Connection to server established.");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+                Socket clientSocket = serverSocket.accept();
 
-    public void messageToClient(String message){
-        writer.println(message);
-        writer.flush();
-    }
+                new Thread(
+                        new Runnable() {
 
-    public String messageFromClient(){
-        String message = null;              //<--- String must be initialized
-        try {
-            while ((message = reader.readLine()) != null){
-                return message;                                 //<--- just nu bara crap, Se klassen HandleRequest, Validate metoden.
+                            public void run() {
+                                try {
+                                    InputStream inputStream = clientSocket.getInputStream();
+                                    InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+
+                                    OutputStream outputStream = clientSocket.getOutputStream();
+                                    PrintWriter writer = new PrintWriter(outputStream);
+
+                                    BufferedReader reader = new BufferedReader(inputStreamReader);
+                                    for (String line = reader.readLine(); line != null; line = reader.readLine()) {
+                                        System.out.println(line);
+                                        writer.println("Message received: " + line);
+                                        writer.flush();
+                                        if (line.equals("getall")) {
+                                            String tempString = handleDatabase.getData();
+                                            writer.println(tempString);
+                                        }else if (line.equals("exit")){
+                                            break;
+                                        }
+                                    }
+                                    reader.close();
+                                    writer.close();
+                                    clientSocket.close();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+                        }
+                ).start();
+
             }
-        } catch (IOException e) {
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return message;             //<--- Eftersom den inte är inne i samma brackets tar den värdet från början...
-    }
 
+    }
 }
