@@ -3,18 +3,20 @@ package nackademin.java;
 import java.io.*;
 
 public class HandleDatabase {
-    private File dbContacts = null;
-    private String line = null;
-    private String modified = null;
+    private File dbContacts;
+    private String line;
+    private String modified;
+    private String str;
 
     public String getData() {
         try {
             dbContacts = new File("C:\\Users\\patri\\Desktop\\ServerCatalogue\\src\\contacts.csv");
             FileReader fileReader = new FileReader(dbContacts);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
-            while (bufferedReader.readLine() != null) {
+            while ((str = bufferedReader.readLine()) != null) {
 
-                line += bufferedReader.readLine() + "\n";
+                line += str + "\n";
+
             }
             modified = line.replace(',',' ');
             System.out.println(modified);
