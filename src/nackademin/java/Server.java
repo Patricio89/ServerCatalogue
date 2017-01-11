@@ -12,7 +12,7 @@ public class Server {
     private HandleDatabase handleDatabase = new HandleDatabase();
     public void online(){
         try {
-            
+
             ServerSocket serverSocket = new ServerSocket(defaultPort);
 
             while(true) {
@@ -34,6 +34,7 @@ public class Server {
                                     if (line.equals("getall")) {
                                         String tempString = handleDatabase.getData();
                                         writer.println(tempString);
+                                        writer.flush();
                                     }else if (line.equals("exit")){
                                         break;
                                     }
